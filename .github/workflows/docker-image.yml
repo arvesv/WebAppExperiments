@@ -1,4 +1,6 @@
-# A script that deploys a Docker image to Google Cloud Run using GitHub Actions
+# A script that deploys a Docker image to Google Artifact registry
+# and Cloud Run.  Most of the secrets are in Azure App Configuration/Key Vault
+# se we log into Azure first to get the secrets.
 
 name: Deploy to Google Cloud Run
 
