@@ -1,15 +1,13 @@
-name: Docker Image CI
+# A script that deploys a Docker image to Google Cloud Run using GitHub Actions
+
+name: Deploy to Google Cloud Run
+
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
