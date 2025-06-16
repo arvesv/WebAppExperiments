@@ -34,9 +34,9 @@ jobs:
         tenant-id: ${{ env.AZURE_TENANT_ID }}
         subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Build Docker Image
+    - name: Show Azure Subscription
       run: |
-        echo "Building Docker image"
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/my-app:latest .  
+        az account show
+        az appconfig kv show --name arvesv --key "gcr:registry"  --query value -o tsv
 
 
