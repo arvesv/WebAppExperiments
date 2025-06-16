@@ -35,7 +35,8 @@ jobs:
         subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
     - name: Show Azure Subscription
-      run: |
+      run: |    
         az account show
+        az appconfig kv show --name arvesv --key "gcr:registry"  --query value -o tsv
 
 
