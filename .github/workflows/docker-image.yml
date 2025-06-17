@@ -23,6 +23,8 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_APCONFIG: ${{ secrets.AZURE_APCONFIG }}
+      APPNAME: demo1
 
     steps:
     - uses: actions/checkout@v4
@@ -34,26 +36,12 @@ jobs:
         tenant-id: ${{ env.AZURE_TENANT_ID }}
         subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Show Azure Subscription
+    - name: Get App Configuration
       run: |
-        az account show
-        JUBA=$(az appconfig kv show --name arvesv --key "gcr:registry" --query value -o tsv)
-        echo "JUBA=$JUBA" >> $GITHUB_ENV
-        az appconfig kv list  --auth-mode login --name arvesv --key "gcr:spkey"  --resolve-keyvault --query [].value -o tsv > keyvault.json
-        
-    - name: Login to Google Cloud
-      run: |
-        echo ${JUBA} 
-        gcloud auth activate-service-account --key-file=keyvault.json
-        gcloud info
-        gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://europe-north1-docker.pkg.dev
-
-    - name: Build Docker Image
-      run: |
-        docker build -t europe-north1-docker.pkg.dev/arvesv/ar/fsweb:latest -f Web/Dockerfile .
-        docker push europe-north1-docker.pkg.dev/arvesv/ar/fsweb:latest
-      
-
+        MYCONFIG=(az appconfig kv list  --auth-mode login --name ${AZURE_APPCONFIG} --resolve-keyvault --key "demo1:*")
+        echo ${MYCONFIG} 
+        REGISTRY=$(echo ${MYCONFIG} | jq -r '.[] | select(.key == "demo1:registry") | .value')
+        echo "REGISTRY=${REGISTRY}"
 
 
            
