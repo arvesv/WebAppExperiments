@@ -44,7 +44,7 @@ jobs:
 
     - name: Login to Google Cloud
       run: |
-        echo "${SPKEY }}" | gcloud auth activate-service-account --key-file=-
+        echo $SPKEY | gcloud auth activate-service-account --key-file=-
         cloud info
 
 
