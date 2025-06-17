@@ -42,6 +42,7 @@ jobs:
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name ${{secrets.AZURE_APPCONFIG}} --resolve-keyvault --key "${APPNAME}:*")   
         echo "MYCONFIG=$MYCONFIG"     
         REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
+        echo $REGISTRY
         SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
 
     - name: Login to Google Cloud
