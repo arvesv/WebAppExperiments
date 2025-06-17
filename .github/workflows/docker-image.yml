@@ -42,10 +42,9 @@ jobs:
         echo "Getting App Configuration for $AZURE_APPCONFIG"
         echo "Using App Name: $APPNAME"
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")   
-        echo "MYCONFIG=$MYCONFIG"     
         REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
-        echo $REGISTRY
         SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
+        echo "SPKEY=$SPKEY" >> $GITHUB_ENV
 
     - name: Login to Google Cloud
       run: |
