@@ -41,11 +41,18 @@ jobs:
         echo "JUBA=$JUBA" >> $GITHUB_ENV
         az appconfig kv list  --auth-mode login --name arvesv --key "gcr:spkey"  --resolve-keyvault --query [].value -o tsv > keyvault.json
         
-
     - name: Login to Google Cloud
       run: |
+        echo ${JUBA} 
         gcloud auth activate-service-account --key-file=keyvault.json
         gcloud info
-        
+
+    - name: Build Docker Image
+      run: |
+        docker build -t europe-north1-docker.pkg.dev/arvesv/ar/fsweb:latest -f Web/Dockerfile .
+        docker push europe-north1-docker.pkg.dev/arvesv/ar/fsweb:latest
+      
 
 
+
+           
