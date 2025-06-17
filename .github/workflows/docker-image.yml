@@ -50,8 +50,8 @@ jobs:
 
     - name: Login to Google Cloud
       run: |
-        echo ${{ env.SPKEY }}
-        echo ${{ env.SPKEY }} | gcloud auth activate-service-account --key-file=-
+        echo $SPKEY 
+        echo $SPKEY | gcloud auth activate-service-account --key-file=-
         cloud info
 
 
