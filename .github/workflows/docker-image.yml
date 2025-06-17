@@ -44,8 +44,7 @@ jobs:
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")   
         REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
         SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
-        # This step appends the value of the SPKEY environment variable to the GitHub Actions environment file ($GITHUB_ENV),
-        # making SPKEY available to subsequent steps in the workflow as an environment variable.
+        echo "SPKEY=$SPKEY"
         echo "SPKEY=$SPKEY" >> $GITHUB_ENV
         echo "action_state=yellow" >> "$GITHUB_ENV"
 
