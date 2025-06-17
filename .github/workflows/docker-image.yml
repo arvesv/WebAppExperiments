@@ -23,7 +23,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
       AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_APCONFIG: ${{ secrets.AZURE_APCONFIG }}
+      AZURE_APCONFIG: d${{ secrets.AZURE_APCONFIG }}
       APPNAME: demo1
 
     steps:
@@ -39,7 +39,7 @@ jobs:
 
     - name: Get App Configuration
       run: |
-        MYCONFIG=$(az appconfig kv list  --auth-mode login --name ${{secrets.AZURE_APPCONFIG}} --resolve-keyvault --key "${APPNAME}:*")   
+        MYCONFIG=$(az appconfig kv list  --auth-mode login --name ${{env.AZURE_APPCONFIG}} --resolve-keyvault --key "${APPNAME}:*")   
         echo "MYCONFIG=$MYCONFIG"     
         REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
         echo $REGISTRY
