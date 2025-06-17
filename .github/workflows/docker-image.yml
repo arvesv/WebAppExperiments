@@ -38,10 +38,15 @@ jobs:
 
     - name: Get App Configuration
       run: |
-        MYCONFIG=$(az appconfig kv list  --auth-mode login --name ${{secrets.AZURE_APPCONFIG}} --resolve-keyvault --key "${APPNAME}:*")
-        echo $MYCONFIG
-        REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "demo1:registry") | .value')
-        echo "REGISTRY=${REGISTRY}"
+        MYCONFIG=$(az appconfig kv list  --auth-mode login --name ${{secrets.AZURE_APPCONFIG}} --resolve-keyvault --key "${APPNAME}:*")       
+        REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
+        SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
+
+    - name: Login to Google Cloud
+      run: |
+        echo "${SPKEY }}" | gcloud auth activate-service-account --key-file=-
+        cloud info
+
 
 
 
