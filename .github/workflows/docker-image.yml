@@ -39,8 +39,8 @@ jobs:
     - name: Get App Configuration
       run: |
         MYCONFIG=(az appconfig kv list  --auth-mode login --name ${AZURE_APPCONFIG} --resolve-keyvault --key "demo1:*")
-        echo ${MYCONFIG} 
-        REGISTRY=$(echo ${MYCONFIG} | jq -r '.[] | select(.key == "demo1:registry") | .value')
+        echo $MYCONFIG
+        REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "demo1:registry") | .value')
         echo "REGISTRY=${REGISTRY}"
 
 
