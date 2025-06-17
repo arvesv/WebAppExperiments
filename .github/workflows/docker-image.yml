@@ -29,8 +29,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Azure Login - for app configuration
-      # This step logs into Azure to get the App Configuration secrets
+    - name: Azure Login
+      # This step logs into Azure to get the App Configuration settings
       uses: azure/login@v2
       with:
         client-id: ${{ env.AZURE_CLIENT_ID }}
@@ -44,12 +44,14 @@ jobs:
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")   
         REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
         SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
+        # This step appends the value of the SPKEY environment variable to the GitHub Actions environment file ($GITHUB_ENV),
+        # making SPKEY available to subsequent steps in the workflow as an environment variable.
         echo "SPKEY=$SPKEY" >> $GITHUB_ENV
 
     - name: Login to Google Cloud
       run: |
-        echo $SPKEY
-        echo $SPKEY | gcloud auth activate-service-account --key-file=-
+        echo ${{ env.SPKEY }}
+        echo ${{ env.SPKEY }} | gcloud auth activate-service-account --key-file=-
         cloud info
 
 
