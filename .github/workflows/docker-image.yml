@@ -43,6 +43,7 @@ jobs:
         echo "Using App Name: $APPNAME"
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")  
         echo "MYCONFIG=$MYCONFIG" 
+        echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value'
         REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
         SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
         echo "REGISTRY=$REGISTRY"
