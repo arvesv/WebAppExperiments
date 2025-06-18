@@ -15,4 +15,4 @@ jobs:
         run: |
           JSONX='{"name": "test", "version": "1.0.0"}'
           echo ${JSONX} 
-        run: jq -V
+          jq -V
