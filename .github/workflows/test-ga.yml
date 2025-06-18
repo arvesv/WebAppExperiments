@@ -1,0 +1,15 @@
+name: Test GitHub Actions Workflow
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+   
+      - name: Run tool setup
+        run: jq -V
