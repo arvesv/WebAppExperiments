@@ -60,7 +60,7 @@ jobs:
     - name: Build Docker Image
       run: |
         echo "Building Docker image"
-        docker build -t $REGISTRY/$APPNAMElatest -f Web/Dockerfile .
+        docker build -t $REGISTRY/$APPNAME:latest -f Web/Dockerfile .
         echo "Pushing Docker image to Google Artifact Registry"
         docker push $REGISTRY/$APPNAME:latest
 
