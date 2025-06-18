@@ -46,9 +46,9 @@ jobs:
         SPKEY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":spkey")) | .value')
         echo "REGISTRY=$REGISTRY"
         echo "SPKEY=$SPKEY"
-        echo "SPKEY<<EOF" >> $GITHUB_ENV
+        echo "SPKEY=<<EOF" >> $GITHUB_ENV
         echo "$SPKEY" >> $GITHUB_ENV
-        echo "SPKEY<<EOF" >> $GITHUB_ENV  
+        echo "EOF" >> $GITHUB_ENV  
 
     - name: Login to Google Cloud
       run: |
