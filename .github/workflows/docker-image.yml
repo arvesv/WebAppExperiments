@@ -44,8 +44,6 @@ jobs:
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")  
         REGISTRY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":registry")) | .value')
         SPKEY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":spkey")) | .value')
-        echo "REGISTRY=$REGISTRY"
-        echo "SPKEY=$SPKEY"
         # Save SPKEY to a file for use in the next step
         echo "$SPKEY" > $GITHUB_WORKSPACE/spkey.json
         echo "SPKEY_FILE=$GITHUB_WORKSPACE/spkey.json" >> $GITHUB_ENV
@@ -54,10 +52,17 @@ jobs:
     - name: Login to Google Cloud
       run: |
         SPKEY=$(cat $GITHUB_WORKSPACE/spkey.json)
-        echo $SPKEY 
         echo $REGISTRY
         echo $SPKEY | gcloud auth activate-service-account --key-file=-
+        gcloud auth configure-docker $(echo $REGISTRY | awk -F'/' '{print $1}') --quiet
         gcloud info
+
+    - name: Build Docker Image
+      run: |
+        echo "Building Docker image"
+        docker build -t $REGISTRY/demo1:latest .
+        echo "Pushing Docker image to Google Artifact Registry"
+        docker push $REGISTRY/demo1:latest
 
 
    
