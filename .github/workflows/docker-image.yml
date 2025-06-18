@@ -71,7 +71,7 @@ jobs:
           --image $REGISTRY/$APPNAME:latest \
           --platform managed \
           --region europe-north1 \
-          --allow-unauthenticated
+          --allow-unauthenticated \
           --project arvesv
         echo "Deployment complete"
 
