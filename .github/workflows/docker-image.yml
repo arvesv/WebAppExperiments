@@ -72,6 +72,7 @@ jobs:
           --platform managed \
           --region europe-north1 \
           --allow-unauthenticated
+          --project arvesv
         echo "Deployment complete"
 
 
