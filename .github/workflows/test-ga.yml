@@ -11,9 +11,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
    
-      - name: Run tool setup
+      - name: Do JSON manipulation
         run: |
           JSONX='{"name": "test", "version": "1.0.0"}'
           JUBA=$(echo $JSONX | jq '.name')
           echo "JUBA: $JUBA"
+          echo "JUBA=$JUBA" >> $GITHUB_ENV
           jq -V
+
+      - name: new steo
+        run: |
+          echo "This is a new step in the workflow"
+          echo "Current date and time: $(date)"
+          echo "Running on $(uname -a)"
+          echo "JUBA from previous step: $JUBA"
