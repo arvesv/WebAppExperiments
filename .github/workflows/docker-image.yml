@@ -60,9 +60,19 @@ jobs:
     - name: Build Docker Image
       run: |
         echo "Building Docker image"
-        docker build -t $REGISTRY/demo1:latest -f Web/Dockerfile .
+        docker build -t $REGISTRY/$APPNAMElatest -f Web/Dockerfile .
         echo "Pushing Docker image to Google Artifact Registry"
-        docker push $REGISTRY/demo1:latest
+        docker push $REGISTRY/$APPNAME:latest
+
+    - name: Deploy to Cloud Run
+      run: |
+        echo "Deploying to Cloud Run"
+        gcloud run deploy $APPNAME \
+          --image $REGISTRY/$APPNAME:latest \
+          --platform managed \
+          --region europe-north1 \
+          --allow-unauthenticated \
+        echo "Deployment complete"
 
 
    
