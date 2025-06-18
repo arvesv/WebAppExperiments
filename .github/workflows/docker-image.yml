@@ -46,20 +46,17 @@ jobs:
         SPKEY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":spkey")) | .value')
         echo "REGISTRY=$REGISTRY"
         echo "SPKEY=$SPKEY"
-        echo "SPKEY=<<EOF" >> $GITHUB_ENV
-        echo "$SPKEY" >> $GITHUB_ENV
-        echo "EOF" >> $GITHUB_ENV  
-
+        # Save SPKEY to a file for use in the next step
+        echo "$SPKEY" > $GITHUB_WORKSPACE/spkey.json
+        echo "SPKEY_FILE=$GITHUB_WORKSPACE/spkey.json" >> $GITHUB_ENV
+       
     - name: Login to Google Cloud
       run: |
+        SPKEY=$(cat $GITHUB_WORKSPACE/spkey.json)
         echo $SPKEY 
         echo $REGISTRY
         echo $SPKEY | gcloud auth activate-service-account --key-file=-
         cloud info
 
 
-
-
-
-
-           
+   
