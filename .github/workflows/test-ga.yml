@@ -14,5 +14,6 @@ jobs:
       - name: Run tool setup
         run: |
           JSONX='{"name": "test", "version": "1.0.0"}'
-          echo $JSONX | jq '.name'
+          JUBA=$(echo $JSONX | jq '.name')
+          echo "JUBA: $JUBA"
           jq -V
