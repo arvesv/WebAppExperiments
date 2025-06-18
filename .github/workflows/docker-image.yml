@@ -42,22 +42,21 @@ jobs:
         echo "Getting App Configuration for $AZURE_APPCONFIG"
         echo "Using App Name: $APPNAME"
         MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")  
-        echo "MYCONFIG=$MYCONFIG" 
-        echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value'
-        REGISTRY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:registry") | .value')
-        SPKEY=$(echo $MYCONFIG | jq -r '.[] | select(.key == "${APPNAME}:spkey") | .value')
+        REGISTRY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":registry")) | .value')
+        SPKEY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":spkey")) | .value')
         echo "REGISTRY=$REGISTRY"
         echo "SPKEY=$SPKEY"
         echo "SPKEY=$SPKEY" >> $GITHUB_ENV
-        echo "action_state=yellow" >> "$GITHUB_ENV"
+        echo "REGISTRY=$REGISTRY" >> "$GITHUB_ENV"
 
     - name: Login to Google Cloud
       run: |
-        echo $action_state
         echo $SPKEY 
+        echo $REGISTRY
         echo $SPKEY | gcloud auth activate-service-account --key-file=-
         cloud info
 
+        
 
 
 
