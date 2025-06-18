@@ -49,6 +49,7 @@ jobs:
         # Save SPKEY to a file for use in the next step
         echo "$SPKEY" > $GITHUB_WORKSPACE/spkey.json
         echo "SPKEY_FILE=$GITHUB_WORKSPACE/spkey.json" >> $GITHUB_ENV
+        echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
        
     - name: Login to Google Cloud
       run: |
@@ -56,7 +57,7 @@ jobs:
         echo $SPKEY 
         echo $REGISTRY
         echo $SPKEY | gcloud auth activate-service-account --key-file=-
-        cloud info
+        gcloud info
 
 
    
