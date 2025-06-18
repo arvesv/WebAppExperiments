@@ -38,7 +38,7 @@ jobs:
       - name: Do JSON manipulation
         run: |
           MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")  
-          echo "MYCONFIG: $MYCONFIG"
+          echo $MYCONFIG
           JSONX='{"name": "test", "version": "1.0.0"}'
           JUBA=$(echo $JSONX | jq '.name')
           echo "JUBA: $JUBA"
