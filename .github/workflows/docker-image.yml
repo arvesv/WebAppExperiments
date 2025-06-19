@@ -1,4 +1,6 @@
-# A script that deploys a Docker image to Google Cloud Run using GitHub Actions
+# A script that deploys a Docker image to Google Artifact registry
+# and Cloud Run.  Most of the secrets are in Azure App Configuration/Key Vault
+# se we log into Azure first to get the secrets.
 
 name: Deploy to Google Cloud Run
 
@@ -6,11 +8,72 @@ name: Deploy to Google Cloud Run
 on:
   workflow_dispatch:
 
+   
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build:
+    name: Build Docker Image
     runs-on: ubuntu-latest
+    environment: Azure
+    
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_APPCONFIG: ${{ secrets.AZURE_APPCONFIG }}
+      APPNAME: demo1
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+    - name: Azure Login
+      # This step logs into Azure to get the App Configuration settings
+      uses: azure/login@v2
+      with:
+        client-id: ${{ env.AZURE_CLIENT_ID }}
+        tenant-id: ${{ env.AZURE_TENANT_ID }}
+        subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Get App Configuration
+      run: |
+        echo "Getting App Configuration for $AZURE_APPCONFIG"
+        echo "Using App Name: $APPNAME"
+        MYCONFIG=$(az appconfig kv list  --auth-mode login --name $AZURE_APPCONFIG  --resolve-keyvault --key "${APPNAME}:*")  
+        REGISTRY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":registry")) | .value')
+        SPKEY=$(echo $MYCONFIG | jq -r --arg appname "$APPNAME" '.[] | select(.key == ($appname + ":spkey")) | .value')
+        # Save SPKEY to a file for use in the next step
+        echo "$SPKEY" > $GITHUB_WORKSPACE/spkey.json
+        echo "SPKEY_FILE=$GITHUB_WORKSPACE/spkey.json" >> $GITHUB_ENV
+        echo "REGISTRY=$REGISTRY" >> $GITHUB_ENV
+       
+    - name: Login to Google Cloud
+      run: |
+        SPKEY=$(cat $GITHUB_WORKSPACE/spkey.json)
+        echo $REGISTRY
+        echo $SPKEY | gcloud auth activate-service-account --key-file=-
+        gcloud auth configure-docker $(echo $REGISTRY | awk -F'/' '{print $1}') --quiet
+        gcloud info
+
+    - name: Build Docker Image
+      run: |
+        echo "Building Docker image"
+        docker build -t $REGISTRY/$APPNAME:latest -f Web/Dockerfile .
+        echo "Pushing Docker image to Google Artifact Registry"
+        docker push $REGISTRY/$APPNAME:latest
+
+    - name: Deploy to Cloud Run
+      run: |
+        echo "Deploying to Cloud Run"
+        gcloud run deploy $APPNAME \
+          --image $REGISTRY/$APPNAME:latest \
+          --platform managed \
+          --region europe-north1 \
+          --allow-unauthenticated \
+          --project arvesv
+        echo "Deployment complete"
+
+
+   
