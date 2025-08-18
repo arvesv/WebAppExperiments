@@ -27,7 +27,7 @@ jobs:
       APPNAME: demo1
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Azure Login
       # This step logs into Azure to get the App Configuration settings
